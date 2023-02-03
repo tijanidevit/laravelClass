@@ -59,27 +59,22 @@ class AuthController extends Controller
 
     }
 
-    public function resetPassword(Request $request,$id)
+    public function resetPassword(Request $request)
     {
+
+
+
         // find user by id
-        $user = User::findByID($id);
-        $this->validate($request, [
+        $user = auth()->user();
+        // $user = User::find($id);
+        $data = $this->validate($request, [
             'password' => 'required|min:8',
         ]);
+        $user->save();
 
-        // if user not in the model
-        if (!$user)
-        {
-            return response()->json([
-                'error' => 'User not found '
-            ], 404);
-        }
-        else
-        {
-            // if user is present update the password
 
-            $user->password = Hash::make($request->get('password'));
-            $user->save();
+            $user->password = Hash::make($data['password']);
+
             // check if user  password is updated
             if($user->isDirty('password'))
             {
@@ -98,7 +93,7 @@ class AuthController extends Controller
                 ], 401);
 
             }
-        }
+
 
     }
 

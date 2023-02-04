@@ -6,6 +6,8 @@ We will build a mini, yet complete, laravel API. It will consist of the followin
 - Processing multiple data with queue and jobs
 - Cron jobs to perform recurrent operations
 - Clean Code
+- General Exception Handling
+- Business Logic Exceptions
 - More and more will be added
 
 ## Setting Up

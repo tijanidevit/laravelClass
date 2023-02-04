@@ -2,36 +2,27 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\Auth;
+use App\Http\Requests\User\Auth\RegisterRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
+use App\Services\User\AuthService;
+use App\Http\Traits\ResponseTrait;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Hash;
-
+use Illuminate\Support\Facades\Log;
 
 class AuthController extends Controller
 {
-    public function register(Request $request)
+    use ResponseTrait;
+    public function register(RegisterRequest $request): Response
     {
-        $this->validate($request, [
-            'name' => 'required|min:4',
-            'email' => 'required|email|unique:users,email',
-            'password' => 'required|min:8',
-        ]);
-
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => bcrypt($request->password)
-        ]);
-
-        $token = $user->createToken('LaravelClassToken')->accessToken;
-        $response = [
-            'token' => $token,
-            'user'=>$user,
-        ];
-
-        return response()->json(['token' => $token], 200);
+        $data = $request->validated();
+        try {
+            $token = (new AuthService)->register($data);
+            return $this->successResponse('Registered Successfully', ['token' => $token, 201]);
+        } catch (\Exception $ex) {
+            Log::alert($ex->getMessage());
+            return $this->serverError();
+        }
     }
     public function login(Request $request)
     {
@@ -50,15 +41,6 @@ class AuthController extends Controller
             );
         }
     }
-    public function userDetails()
-    {
-
-     $user = auth()->user();
-
-     return response()->json(['user' => $user], 200);
-
-    }
-
     public function resetPassword(Request $request,$id)
     {
         // find user by id

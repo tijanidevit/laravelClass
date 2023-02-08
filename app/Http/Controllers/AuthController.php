@@ -9,6 +9,9 @@ use Illuminate\Http\Request;
 
 use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\User\Auth\RegisterRequest;
+
+use App\Http\Requests\User\Auth\ResetPasswordRequest;
+
 use App\Http\Traits\ResponseTrait;
 use App\Services\User\AuthService;
 use Illuminate\Support\Facades\Log;
@@ -31,28 +34,23 @@ class AuthController extends Controller
 
 
     }
-    public function login(Request $request)
+    public function login(LoginRequest $request)
     {
-        $data = [
-            'email' => $request->email,
-            'password' => $request->password
-        ];
+        $data = $request->validated();
 
         try {
-            $token = (new AuthService)->login($data);
-            return $this->successResponse('Login Success', ['token' => $token, 201]);
+            if($token = (new AuthService)->login($data)){
+                return $this->successResponse('Login Success', ['token' => $token]);
+            }
+            else {
+                return $this->errorResponse("Invalid Login",401);
+            }
+
         } catch (\Exception $ex) {
             Log::alert($ex->getMessage());
-            return $this->serverError();
+            return $this->errorResponse("Something went wrong",401);
         }
-        // if (auth()->attempt($data)) {
-        //     $token = auth()->user()->createToken('LaravelClassToken')->accessToken;
-        //     return response()->json(['token' => $token], 202);
-        // } else {
-        //     return response()->json(
-        //         ['error' => 'Unauthorised'], 401
-        //     );
-        // }
+
     }
     public function userDetails()
     {
@@ -63,40 +61,17 @@ class AuthController extends Controller
 
     }
 
-    public function resetPassword(Request $request)
+    public function resetPassword(ResetPasswordRequest $request)
     {
 
-
-
-        // find user by id
-        $user = auth()->user();
-        // $user = User::find($id);
-        $data = $this->validate($request, [
-            'password' => 'required|min:8',
-        ]);
-        $user->save();
-
-
-            $user->password = Hash::make($data['password']);
-
-            // check if user  password is updated
-            if($user->isDirty('password'))
-            {
-                $token = $user->createToken('LaravelClassToken')->accessToken;
-                return response()->json([
-                    'message' => 'Password reset sucessfully ',
-                    'token' => $token
-                ], 200);
-
-            }
-            else
-            {
-                // if the user password not updated
-                return response()->json([
-                    'error' => 'Password not reset'
-                ], 401);
-
-            }
+        $data = $request->validated();
+        try {
+            $token = (new AuthService)->resetPassword($data);
+            return $this->successResponse('Updated Successfully', ['token' => $token]);
+        } catch (\Exception $ex) {
+            Log::alert($ex->getMessage());
+            return $this->serverError();
+        }
 
 
     }

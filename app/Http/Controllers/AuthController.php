@@ -66,8 +66,12 @@ class AuthController extends Controller
 
         $data = $request->validated();
         try {
-            $token = (new AuthService)->resetPassword($data);
-            return $this->successResponse('Updated Successfully', ['token' => $token]);
+            if($token = (new AuthService)->resetPassword($data)){
+                return $this->successResponse('Login Success', ['token' => $token]);
+            }
+            else {
+                return $this->errorResponse("Not updated",401);
+            }
         } catch (\Exception $ex) {
             Log::alert($ex->getMessage());
             return $this->serverError();

@@ -23,11 +23,17 @@ class AuthService
         if (auth()->attempt($data)) {
             $token = auth()->user()->createToken('LaravelClassToken')->accessToken;
             return $token;
-        } else {
-            return response()->json(
-                ['error' => 'Unauthorised'], 401
-            );
         }
+
+    }
+    public function resetPassword(array $data)
+    {
+        $user = auth()->user();
+        $user->password = Hash::make($data['password']);
+        $user->save();
+        $token = $user->createToken('LaravelClassToken')->accessToken;
+        return $token;
+
 
     }
 }

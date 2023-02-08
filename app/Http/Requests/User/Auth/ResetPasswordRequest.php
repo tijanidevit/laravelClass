@@ -4,10 +4,7 @@ namespace App\Http\Requests\User\Auth;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-use Illuminate\Contracts\Validation\Validator;
-use Illuminate\Http\Exceptions\HttpResponseException;
-
-class LoginRequest extends FormRequest
+class ResetPasswordRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -27,12 +24,7 @@ class LoginRequest extends FormRequest
     public function rules()
     {
         return [
-
-            'email' => 'required|email',
             'password' => 'required|min:8',
         ];
-    }
-    public function failedValidation(Validator $validator){
-        throw new HttpResponseException($this->errorResponse($validator->errors()->first(), 422));
     }
 }

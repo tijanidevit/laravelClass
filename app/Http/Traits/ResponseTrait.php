@@ -26,6 +26,7 @@ trait ResponseTrait{
             "message" => $message,
         ], $status);
     }
+
     public function serverError(string $message="Internal Server Error")
     {
         return $this->errorResponse($message);

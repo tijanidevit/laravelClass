@@ -9,8 +9,10 @@ use Illuminate\Http\Request;
 
 use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\User\Auth\RegisterRequest;
+use App\Http\Requests\User\Auth\SendResetPasswordRequest;
 
 use App\Http\Requests\User\Auth\ResetPasswordRequest;
+use App\Http\Models\User;
 
 use App\Http\Traits\ResponseTrait;
 use App\Services\User\AuthService;
@@ -61,23 +63,15 @@ class AuthController extends Controller
 
     }
 
-    public function resetPassword(ResetPasswordRequest $request)
+
+
+    public function logout(Request $request)
     {
-
-        $data = $request->validated();
-        try {
-            if($token = (new AuthService)->resetPassword($data)){
-                return $this->successResponse('Login Success', ['token' => $token]);
-            }
-            else {
-                return $this->errorResponse("Not updated",401);
-            }
-        } catch (\Exception $ex) {
-            Log::alert($ex->getMessage());
-            return $this->serverError();
-        }
-
-
+        $request->user()->token()->revoke();
+        return response()->json([
+            'message' => 'Successfully logged out'
+        ]);
     }
+
 
 }

@@ -18,30 +18,32 @@ use App\Http\Traits\ResponseTrait;
 use App\Services\User\AuthService;
 use Illuminate\Support\Facades\Log;
 
-
 class AuthController extends Controller
 {
-    use ResponseTrait;
+    protected AuthService $authService;
+
+    public function __construct(AuthService $authService){
+        $this->authService = $authService;
+    }
+
     public function register(RegisterRequest $request)
     {
-
         $data = $request->validated();
         try {
-            $token = (new AuthService)->register($data);
+            $token = $this->authService->register($data);
             return $this->successResponse('Registered Successfully', ['token' => $token, 201]);
         } catch (\Exception $ex) {
             Log::alert($ex->getMessage());
             return $this->serverError();
         }
-
-
     }
+
     public function login(LoginRequest $request)
     {
         $data = $request->validated();
 
         try {
-            if($token = (new AuthService)->login($data)){
+            if($token = $this->authService->login($data)){
                 return $this->successResponse('Login Success', ['token' => $token]);
             }
             else {
@@ -54,16 +56,6 @@ class AuthController extends Controller
         }
 
     }
-    public function userDetails()
-    {
-
-     $user = auth()->user();
-
-     return response()->json(['user' => $user], 200);
-
-    }
-
-
 
     public function logout(Request $request)
     {

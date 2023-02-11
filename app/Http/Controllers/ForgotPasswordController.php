@@ -13,22 +13,23 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Message;
 
-
+use App\Http\Traits\ResponseTrait;
+use Illuminate\Support\Facades\Log;
 
 class ForgotPasswordController extends Controller
 {
+    use ResponseTrait;
     public function forgotPassword(SendResetPasswordRequest $request)
     {
-        $email = $request->input('email');
+
         $data = $request->validated();
+        $email = $data['email'];
         $user = User::where('email', $data['email']);
         if(User::where('email', $email)->doesntExist())
         {
-            return response([
-                'message' => 'User does not exist',
-            ],status:404);
+            return $this->errorResponse('User does not exist', 404);
+
         }
         $token = Str::random(10);
         try{
@@ -42,19 +43,17 @@ class ForgotPasswordController extends Controller
             Mail::to('basharu83@gmail.com')->send(new ForgotPassword($token),['token'=>$token]);
 
             if (Mail::failures()) {
-                 return response()->json(['message'=> 'Sorry! Please try again latter']);
+                return $this->errorResponse('Sorry Please try again', 404);
             }else{
-                 return response()->json(['message'=>'Great! Successfully send in your mail']);
+                return $this->successResponse('Email sent Successfully', $data,201);
                }
 
 
 
         }catch(\Exception $e){
-            return response()->json(
-                [
-                    'message' => $e->getMessage(),
-                ],status:400
-                );
+            Log::alert($e->getMessage());
+            return $this->errorResponse("Something went wrong",401);
+
         }
 
 
@@ -63,20 +62,14 @@ class ForgotPasswordController extends Controller
     {
         $token = $request->input('token');
         if (!$passwordResets = DB::table('password_resets')->where('token', $token)->first()){
-            return response()->json([
-                'message'=>'invalid token',
-            ],status:400);
+            return $this->errorResponse('Invalid', 404);
 
         }
         if(!$user = User::where('email', $passwordResets->email)->first()){
-            return response()->json([
-                'message' => 'User does not exist',
-            ],404);
+            return $this->errorResponse('User does not exist', 404);
         }
         $user->password = Hash::make($request->input('password'));
         $user->save();
-        return response()->json([
-            'message' =>'Success'
-        ]);
+        return $this->successResponse('Password updated Successfully', ['token'=>$token],201);
     }
 }

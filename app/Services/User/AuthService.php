@@ -26,14 +26,14 @@ class AuthService
         }
 
     }
-    public function resetPassword(array $data)
-    {
-        $user = auth()->user();
-        $user->password = Hash::make($data['password']);
-        $user->save();
-        $token = $user->createToken('LaravelClassToken')->accessToken;
-        return $token;
+    // public function resetPassword(array $data)
+    // {
+    //     $user = auth()->user();
+    //     $user->password = Hash::make($data['password']);
+    //     $user->save();
+    //     $token = $user->createToken('LaravelClassToken')->accessToken;
+    //     return $token;
 
 
-    }
+    // }
 }

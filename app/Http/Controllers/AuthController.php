@@ -26,7 +26,7 @@ class AuthController extends Controller
         $this->authService = $authService;
     }
 
-    public function register(RegisterRequest $request)
+    public function register(RegisterRequest $request):object
     {
         $data = $request->validated();
         try {
@@ -38,7 +38,7 @@ class AuthController extends Controller
         }
     }
 
-    public function login(LoginRequest $request)
+    public function login(LoginRequest $request):object
     {
         $data = $request->validated();
 
@@ -57,7 +57,7 @@ class AuthController extends Controller
 
     }
 
-    public function logout(Request $request)
+    public function logout(Request $request):object
     {
         $request->user()->token()->revoke();
         return response()->json([

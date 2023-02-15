@@ -6,9 +6,6 @@ use App\Http\Requests\User\Auth\ResetRequest;
 use App\Http\Requests\User\Auth\SendResetPasswordRequest;
 use App\Mail\ForgotPassword;
 use App\Models\User;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
-use Illuminate\Mail\Message as MailMessage;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -20,7 +17,7 @@ use Illuminate\Support\Facades\Log;
 class ForgotPasswordController extends Controller
 {
     use ResponseTrait;
-    public function forgotPassword(SendResetPasswordRequest $request)
+    public function forgotPassword(SendResetPasswordRequest $request):object
     {
 
         $data = $request->validated();
@@ -58,9 +55,10 @@ class ForgotPasswordController extends Controller
 
 
     }
-    public function resetPassword(ResetRequest $request)
+    public function resetPassword(ResetRequest $request):object
     {
-        $token = $request->input('token');
+        $data = $request->validated();
+        $token = $data['token'];
         if (!$passwordResets = DB::table('password_resets')->where('token', $token)->first()){
             return $this->errorResponse('Invalid', 404);
 

@@ -14,7 +14,7 @@ use App\Http\Requests\User\Auth\RegisterRequest;
 use App\Http\Requests\User\Auth\SendResetPasswordRequest;
 
 
-use App\Http\Models\User;
+use App\Models\User;
 use App\Http\Requests\User\Auth\ResetRequest;
 use App\Http\Traits\ResponseTrait;
 
@@ -67,8 +67,9 @@ class AuthController extends Controller
 
         $data = $request->validated();
         $email = $data['email'];
-        $user =User::where('email', $data['email']);
-        if(User::where('email', $email))
+
+
+        if(!User::where('email', $data['email'])->first())
         {
             return $this->errorResponse('User does not exist', 404);
 
@@ -105,9 +106,10 @@ class AuthController extends Controller
         $data = $request->validated();
         $token = $data['token'];
         if (!$passwordResets = DB::table('password_resets')->where('token', $token)->first()){
-            return $this->errorResponse('Invalid', 404);
+            return $this->errorResponse('Invalid token provided', 404);
 
         }
+        $user = User::where('email', $passwordResets->email)->first();
         if(!$user = User::where('email', $passwordResets->email)->first()){
             return $this->errorResponse('User does not exist', 404);
         }

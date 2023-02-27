@@ -15,13 +15,16 @@ class AuthService
     {
         $data['password'] = Hash::make($data['password']);
         $user = User::create($data);
-        $token = $user->createToken('LaravelClassToken')->accessToken;
+        $token = $user->createToken(config('services.auth.token'))->accessToken;
         return $token;
     }
     public function login(array $data)
     {
+
+
+
         if (auth()->attempt($data)) {
-            $token = auth()->user()->createToken('LaravelClassToken')->accessToken;
+            $token = auth()->user()->createToken(config('services.auth.token'))->accessToken;
             return $token;
         }
 

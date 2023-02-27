@@ -76,12 +76,9 @@ class AuthController extends Controller
         }
         $token = Str::random(10);
         try{
-            DB::table('password_resets')->insert(
-                [
-                    'email' => $email,
-                    'token' => $token
-                ]
-                );
+            $data = ['email' => $email,  'token' => $token];
+            $this->authService->insertToken($data);
+
             // send an Email
             Mail::to('basharu83@gmail.com')->send(new ForgotPassword($token),['token'=>$token]);
 
@@ -90,8 +87,6 @@ class AuthController extends Controller
             }else{
                 return $this->successResponse('Email sent Successfully', $data,201);
                }
-
-
 
         }catch(\Exception $e){
             Log::alert($e->getMessage());

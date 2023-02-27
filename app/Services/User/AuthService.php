@@ -2,8 +2,12 @@
 
 namespace App\Services\User;
 
+use App\Mail\ForgotPassword;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
+use Facade\FlareClient\Http\Response;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 
 
 /**
@@ -29,5 +33,26 @@ class AuthService
         }
 
     }
+    public function insertToken(array $data) : void
+    {
+        DB::table('password_resets')->insert(
+            [
+                'email' => $data['email'],
+                'token' => $data['token']
+            ]);
+    }
+    // public function sendEmail(array $data) : Response
+    // {
+    //       // send an Email
+    //       Mail::to($data['email'])->send(new ForgotPassword($data['token']),['token'=>$data['token']]);
+
+    //       if (Mail::failures()) {
+    //           return $this->errorResponse('Sorry Please try again', 404);
+    //       }else{
+    //           return $this->successResponse('Email sent Successfully', $data,201);
+    //          }
+
+    // }
+
 
 }

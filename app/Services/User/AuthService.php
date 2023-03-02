@@ -20,6 +20,7 @@ class AuthService
         $data['password'] = Hash::make($data['password']);
         $user = User::create($data);
         $token = $user->createToken(config('services.auth.token'))->accessToken;
+
         return $token;
     }
     public function login(array $data)

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\RegistrationSucessful;
 use App\Http\Requests\User\Auth\LoginRequest;
 use App\Mail\ForgotPassword;
 
@@ -37,11 +38,14 @@ class AuthController extends Controller
         $data = $request->validated();
         try {
             $token = $this->authService->register($data);
+            RegistrationSucessful::dispatch($data);
             return $this->successResponse('Registered Successfully', ['token' => $token, 201]);
         } catch (\Exception $ex) {
             Log::alert($ex->getMessage());
             return $this->serverError();
         }
+
+
     }
 
     public function login(LoginRequest $request):object

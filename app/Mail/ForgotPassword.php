@@ -16,10 +16,10 @@ class ForgotPassword extends Mailable
      *
      * @return void
      */
-    public $token;
-    public function __construct($token)
+    public $user;
+    public function __construct($user)
     {
-        $this->token = $token;
+        $this->user = $user;
     }
 
 
@@ -30,10 +30,8 @@ class ForgotPassword extends Mailable
      */
     public function build()
     {
-        $url = "http://localhost:8000/api/reset/$this->token";
-        return $this->markdown('emails.password-reset')->with([
-            'url' => $url
-        ]);
+        return $this->from("basharu83@gmail.com","Registration")
+        ->markdown("emails.password-reset")->with(['user' => $this->user]);
     }
 
 }

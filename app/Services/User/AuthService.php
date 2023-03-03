@@ -3,6 +3,7 @@
 namespace App\Services\User;
 
 use App\Mail\ForgotPassword;
+use App\Models\PasswordReset;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 use Facade\FlareClient\Http\Response;
@@ -32,13 +33,18 @@ class AuthService
         }
 
     }
-    public function insertToken(array $data) : void
+    public function insertToken(array $data) : object
     {
-        DB::table('password_resets')->insert(
-            [
-                'email' => $data['email'],
-                'token' => $data['token']
-            ]);
+
+       $user = PasswordReset::create($data);
+        // $id = DB::table('password_resets')->insertGetID(
+        //     [
+        //         'email' => $data['email'],
+        //         'token' => $data['token']
+        //     ]);
+       return  $user;
+
+
     }
     // public function sendEmail(array $data) : Response
     // {

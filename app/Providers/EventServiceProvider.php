@@ -20,9 +20,13 @@ class EventServiceProvider extends ServiceProvider
         Registered::class => [
             SendEmailVerificationNotification::class,
             SendRegistrationConfirmationEmail::class,
+            sendResetTokenToEmail::class,
         ],
         RegistrationSucessful::class =>[
             SendRegistrationConfirmationEmail::class,
+        ],
+        SendToken::class =>[
+            SendResetTokenToEmail::class,
         ]
     ];
 

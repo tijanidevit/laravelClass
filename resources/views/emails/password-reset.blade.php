@@ -2,9 +2,9 @@
 # Introduction
 
 The body of your message.
-@component('mail::button', ['url' => $url])
+Token: {{$user->token}}
 
-Button Text
+
 @endcomponent
 
 Thanks,<br>

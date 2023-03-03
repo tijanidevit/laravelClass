@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Events\RegistrationSucessful;
+use App\Events\SendToken;
 use App\Http\Requests\User\Auth\LoginRequest;
 use App\Mail\ForgotPassword;
 
@@ -33,7 +34,7 @@ class AuthController extends Controller
         $this->authService = $authService;
     }
 
-    public function register(RegisterRequest $request):object
+    public function register(RegisterRequest $request)
     {
         $data = $request->validated();
 
@@ -41,6 +42,7 @@ class AuthController extends Controller
             $user = $this->authService->register($data);
             $token = $user->createToken(config('services.auth.token'))->accessToken;
             RegistrationSucessful::dispatch($user);
+
             return $this->successResponse('Registered Successfully', ['token' => $token, 201]);
         } catch (\Exception $ex) {
             Log::alert($ex->getMessage());
@@ -68,7 +70,7 @@ class AuthController extends Controller
         }
 
     }
-    public function forgotPassword(SendResetPasswordRequest $request):object
+    public function forgotPassword(SendResetPasswordRequest $request) : object
     {
 
         $data = $request->validated();
@@ -81,18 +83,25 @@ class AuthController extends Controller
 
         }
         $token = Str::random(10);
+        $data = ['email' => $email,  'token' => $token];
         try{
-            $data = ['email' => $email,  'token' => $token];
-            $this->authService->insertToken($data);
 
-            // send an Email
-            Mail::to('basharu83@gmail.com')->send(new ForgotPassword($token),['token'=>$token]);
+            $user =  $this->authService->insertToken($data);
 
-            if (Mail::failures()) {
-                return $this->errorResponse('Sorry Please try again', 404);
-            }else{
-                return $this->successResponse('Email sent Successfully', $data,201);
-               }
+
+            // // convert to object
+            //  $user = (object)$data;
+             // send an Email
+            SendToken::dispatch($user);
+            return $this->successResponse('Email sent Successfully', $data,201);
+
+            // Mail::to($email)->send(new ForgotPassword($token),['token'=>$token]);
+
+            // if (Mail::failures()) {
+            //     return $this->errorResponse('Sorry Please try again', 404);
+            // }else{
+            //     return $this->successResponse('Email sent Successfully', $data,201);
+            //    }
 
         }catch(\Exception $e){
             Log::alert($e->getMessage());

@@ -85,15 +85,17 @@ class AuthController extends Controller
         $token = Str::random(10);
         $data = ['email' => $email,  'token' => $token];
         try{
+            // check if Password resets
+           if ($user =  $this->authService->insertToken($data)){
+             SendToken::dispatch($user);
+            return $this->successResponse('Email sent Successfully', $data,201);
 
-            $user =  $this->authService->insertToken($data);
-
-
+           }
             // // convert to object
             //  $user = (object)$data;
              // send an Email
-            SendToken::dispatch($user);
-            return $this->successResponse('Email sent Successfully', $data,201);
+            // SendToken::dispatch($user);
+            // return $this->successResponse('Email sent Successfully', $data,201);
 
             // Mail::to($email)->send(new ForgotPassword($token),['token'=>$token]);
 

@@ -1,12 +1,9 @@
 @component('mail::message')
-# Introduction
-
-The body of your message.
-Token: {{$user->token}}
+# Password Reset token
+Your reset password token is {{$user->token}}<br>
 
 
-@endcomponent
 
-Thanks,<br>
-{{ config('app.name') }}
+
+
 @endcomponent

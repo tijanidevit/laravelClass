@@ -30,6 +30,7 @@ class ForgotPassword extends Mailable
      */
     public function build()
     {
+
         return $this->from("basharu83@gmail.com","Registration")
         ->markdown("emails.password-reset")->with(['user' => $this->user]);
     }

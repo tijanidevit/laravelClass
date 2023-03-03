@@ -1,6 +1,6 @@
 @component('mail::message')
 # Registration Confirmation
--Name:{{$details}}
+-Name:{{$user->name}}
 
 
 @endcomponent

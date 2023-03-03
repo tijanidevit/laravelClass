@@ -16,9 +16,11 @@ class RegistrationConfirmation extends Mailable
      *
      * @return void
      */
-    public function __construct()
+    public $user;
+    public function __construct($user)
     {
-        //
+        $this->user = $user;
+
     }
 
     /**
@@ -28,7 +30,8 @@ class RegistrationConfirmation extends Mailable
      */
     public function build()
     {
+       #
         return $this->from("basharu83@gmail.com","Registration")
-        ->markdown("emails.registration-confirmation");
+        ->markdown("emails.registration-confirmation")->with(['user' => $this->user]);
     }
 }

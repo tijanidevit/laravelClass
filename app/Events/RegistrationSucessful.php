@@ -11,16 +11,16 @@ use Illuminate\Queue\SerializesModels;
 class RegistrationSucessful
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
-    public $data;
+    public $user;
 
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct(User $data)
+    public function __construct(User $user)
     {
-        $this->data = $data;
+        $this->user = $user;
     }
 
 

@@ -15,13 +15,11 @@ use Illuminate\Support\Facades\Mail;
  */
 class AuthService
 {
-    public function register(array $data): string
+    public function register(array $data): object
     {
         $data['password'] = Hash::make($data['password']);
         $user = User::create($data);
-        $token = $user->createToken(config('services.auth.token'))->accessToken;
-
-        return $token;
+        return $user;
     }
     public function login(array $data)
     {

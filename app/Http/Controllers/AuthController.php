@@ -36,9 +36,11 @@ class AuthController extends Controller
     public function register(RegisterRequest $request):object
     {
         $data = $request->validated();
+
         try {
-            $token = $this->authService->register($data);
-            RegistrationSucessful::dispatch($data);
+            $user = $this->authService->register($data);
+            $token = $user->createToken(config('services.auth.token'))->accessToken;
+            RegistrationSucessful::dispatch($user);
             return $this->successResponse('Registered Successfully', ['token' => $token, 201]);
         } catch (\Exception $ex) {
             Log::alert($ex->getMessage());

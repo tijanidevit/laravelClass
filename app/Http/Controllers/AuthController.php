@@ -19,7 +19,7 @@ use App\Http\Requests\User\Auth\SendResetPasswordRequest;
 use App\Models\User;
 use App\Http\Requests\User\Auth\ResetRequest;
 use App\Http\Traits\ResponseTrait;
-
+use App\Models\PasswordReset;
 use App\Services\User\AuthService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -117,12 +117,9 @@ class AuthController extends Controller
     {
         $data = $request->validated();
         $token = $data['token'];
-        if (!$passwordResets = DB::table('password_resets')->where('token', $token)->first()){
-            return $this->errorResponse('Invalid token provided', 404);
-
-        }
+        $passwordResets = PasswordReset::where('token', $token)->first;
         $user = User::where('email', $passwordResets->email)->first();
-        if(!$user = User::where('email', $passwordResets->email)->first()){
+        if(!$user){
             return $this->errorResponse('User does not exist', 404);
         }
         $user->password = Hash::make($request->input('password'));

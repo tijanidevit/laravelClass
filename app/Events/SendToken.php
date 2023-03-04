@@ -23,12 +23,7 @@ class SendToken
 
     public function __construct(PasswordReset $user)
     {
-
         $this->user = $user;
-
-
-
-
     }
 
 

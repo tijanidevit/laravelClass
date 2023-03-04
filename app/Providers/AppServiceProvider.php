@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Services\User\AuthService;
+use App\Services\User\PasswordService;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -13,7 +15,14 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        $this->app->singleton(PasswordService::class, function ($app)
+        {
+            return new PasswordService();
+        });
+        $this->app->singleton(AuthService::class, function ($app)
+        {
+            return new AuthService(new PasswordService());
+        });
     }
 
     /**

@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests\User\Auth;
 
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
 class ResetRequest extends FormRequest
 {
@@ -24,10 +26,14 @@ class ResetRequest extends FormRequest
     public function rules()
     {
         return [
-            'token' =>'required',
+            'token' =>'required|exists:password_resets,token',
             'password' =>'required',
             'password_confirm'=>'required|same:password',
 
         ];
+    }
+
+    public function failedValidation(Validator $validator){
+        throw new HttpResponseException($this->errorResponse($validator->errors()->first(), 422));
     }
 }

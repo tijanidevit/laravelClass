@@ -2,13 +2,14 @@
 
 namespace App\Services\User;
 
+use App\Models\User;
 use App\Mail\ForgotPassword;
 use App\Models\PasswordReset;
-use Illuminate\Support\Facades\Hash;
-use App\Models\User;
-use Facade\FlareClient\Http\Response;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use Facade\FlareClient\Http\Response;
+use App\Services\User\PasswordService;
 
 
 /**
@@ -16,20 +17,18 @@ use Illuminate\Support\Facades\Mail;
  */
 class AuthService
 {
+    public PasswordService $passwordService;
+    public function __construct(PasswordService $passwordService) {
+        $this->passwordService = $passwordService;
+    }
     public function register(array $data): object
     {
-        $data['password'] = Hash::make($data['password']);
-        $user = User::create($data);
-        return $user;
+        return User::create($data);
     }
     public function login(array $data)
     {
-
-
-
         if (auth()->attempt($data)) {
-            $token = auth()->user()->createToken(config('services.auth.token'))->accessToken;
-            return $token;
+            return auth()->user()->createToken(config('services.auth.token'))->accessToken;
         }
 
     }
@@ -60,4 +59,20 @@ class AuthService
     // }
 
 
+
+	/**
+	 * @return PasswordService
+	 */
+	public function getPasswordService(): App\Services\User\PasswordService {
+		return $this->passwordService;
+	}
+
+	/**
+	 * @param PasswordService $passwordService
+	 * @return self
+	 */
+	public function setPasswordService(App\Services\User\PasswordService $passwordService): self {
+		$this->passwordService = $passwordService;
+		return $this;
+	}
 }

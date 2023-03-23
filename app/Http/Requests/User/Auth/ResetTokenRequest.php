@@ -2,11 +2,11 @@
 
 namespace App\Http\Requests\User\Auth;
 
-use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
-class sendResetPasswordRequest extends FormRequest
+class ResetTokenRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -26,9 +26,13 @@ class sendResetPasswordRequest extends FormRequest
     public function rules()
     {
         return [
-           'email' => 'required|email',
+            'token' =>'required|exists:password_resets,token',
+            'password' =>'required',
+            'password_confirm'=>'required|same:password',
+
         ];
     }
+
     public function failedValidation(Validator $validator){
         throw new HttpResponseException($this->errorResponse($validator->errors()->first(), 422));
     }

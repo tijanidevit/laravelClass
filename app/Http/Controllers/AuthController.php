@@ -17,7 +17,7 @@ use App\Http\Requests\User\Auth\SendResetPasswordRequest;
 
 
 use App\Models\User;
-use App\Http\Requests\User\Auth\ResetRequest;
+use App\Http\Requests\User\Auth\ResetTokenRequest;
 use App\Http\Traits\ResponseTrait;
 use App\Models\PasswordReset;
 use App\Services\User\AuthService;
@@ -113,7 +113,7 @@ class AuthController extends Controller
 
 
     }
-    public function resetPassword(ResetRequest $request):object
+    public function resetPassword(ResetTokenRequest $request):object
     {
         $data = $request->validated();
         $token = $data['token'];

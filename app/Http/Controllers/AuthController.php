@@ -11,20 +11,21 @@ use Illuminate\Support\Str;
 
 use Illuminate\Http\Request;
 
-use Illuminate\Support\Facades\Hash;
+
 use App\Http\Requests\User\Auth\RegisterRequest;
 use App\Http\Requests\User\Auth\SendResetPasswordRequest;
 
 
-use App\Models\User;
+
 use App\Http\Requests\User\Auth\ResetTokenRequest;
 use App\Http\Traits\ResponseTrait;
-use App\Models\PasswordReset;
+use App\Jobs\SendResetTokenJob;
+
 use App\Services\User\AuthService;
 use App\Services\User\PasswordService;
 
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
+
 
 class AuthController extends Controller
 {
@@ -77,7 +78,7 @@ class AuthController extends Controller
         try{
 
            $data =  $this->passwordService->insertToken($request->validated());
-             SendToken::dispatch($data);
+             SendResetTokenJob::dispatch($data);
             return $this->successResponse('Email sent Successfully', $data,201);
         }catch(\Exception $e){
             Log::alert($e->getMessage());

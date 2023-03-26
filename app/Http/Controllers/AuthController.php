@@ -21,17 +21,19 @@ use App\Http\Requests\User\Auth\ResetTokenRequest;
 use App\Http\Traits\ResponseTrait;
 use App\Models\PasswordReset;
 use App\Services\User\AuthService;
-use Illuminate\Support\Facades\DB;
+use App\Services\User\PasswordService;
+
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
 class AuthController extends Controller
 {
-    protected AuthService $authService;
+
+
     use ResponseTrait;
 
-    public function __construct(AuthService $authService){
-        $this->authService = $authService;
+    public function __construct(protected AuthService $authService, protected PasswordService $passwordService){
+
     }
 
     public function register(RegisterRequest $request)
@@ -72,59 +74,37 @@ class AuthController extends Controller
     }
     public function forgotPassword(SendResetPasswordRequest $request) : object
     {
-
-        $data = $request->validated();
-        $email = $data['email'];
-
-
-        if(!User::where('email', $data['email'])->first())
-        {
-            return $this->errorResponse('User does not exist', 404);
-
-        }
-        $token = Str::random(10);
-        $data = ['email' => $email,  'token' => $token];
         try{
-            // check if Password resets
-           $user =  $this->authService->insertToken($data);
-             SendToken::dispatch($user);
+
+           $data =  $this->passwordService->insertToken($request->validated());
+             SendToken::dispatch($data);
             return $this->successResponse('Email sent Successfully', $data,201);
-
-
-            // // convert to object
-            //  $user = (object)$data;
-             // send an Email
-            // SendToken::dispatch($user);
-            // return $this->successResponse('Email sent Successfully', $data,201);
-
-            // Mail::to($email)->send(new ForgotPassword($token),['token'=>$token]);
-
-            // if (Mail::failures()) {
-            //     return $this->errorResponse('Sorry Please try again', 404);
-            // }else{
-            //     return $this->successResponse('Email sent Successfully', $data,201);
-            //    }
-
         }catch(\Exception $e){
             Log::alert($e->getMessage());
             return $this->errorResponse("Something went wrong",401);
 
         }
 
-
     }
     public function resetPassword(ResetTokenRequest $request):object
     {
         $data = $request->validated();
-        $token = $data['token'];
-        $passwordResets = PasswordReset::where('token', $token)->first;
-        $user = User::where('email', $passwordResets->email)->first();
-        if(!$user){
-            return $this->errorResponse('User does not exist', 404);
+        try{
+           $data = $this->passwordService->resetPassword($data);
+           return $this->successResponse('Password updated Successfully', $data,201);
+        }catch(\Exception $e){
+            Log::alert($e->getMessage());
+            return $this->errorResponse("Something went wrong",401);
         }
-        $user->password = Hash::make($request->input('password'));
-        $user->save();
-        return $this->successResponse('Password updated Successfully', ['token'=>$token],201);
+        // $token = $data['token'];
+        // $passwordResets = PasswordReset::where('token', $token)->first;
+        // $user = User::where('email', $passwordResets->email)->first();
+        // if(!$user){
+        //     return $this->errorResponse('User does not exist', 404);
+        // }
+        // $user->password = Hash::make($request->input('password'));
+        // $user->save();
+
     }
 
 

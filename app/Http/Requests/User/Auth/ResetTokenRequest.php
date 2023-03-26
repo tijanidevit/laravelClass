@@ -36,4 +36,10 @@ class ResetTokenRequest extends FormRequest
     public function failedValidation(Validator $validator){
         throw new HttpResponseException($this->errorResponse($validator->errors()->first(), 422));
     }
+    public function messages()
+    {
+        return [
+            'email.exists'=> 'User email not found',
+        ];
+    }
 }

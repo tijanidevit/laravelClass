@@ -26,10 +26,17 @@ class sendResetPasswordRequest extends FormRequest
     public function rules()
     {
         return [
-           'email' => 'required|email',
+           'email' => 'required|email|exists:users',
         ];
     }
     public function failedValidation(Validator $validator){
         throw new HttpResponseException($this->errorResponse($validator->errors()->first(), 422));
+    }
+
+    public function messages()
+    {
+        return [
+            'email.exists'=> 'User email not found',
+        ];
     }
 }

@@ -15,14 +15,14 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->singleton(PasswordService::class, function ($app)
-        {
-            return new PasswordService();
-        });
-        $this->app->singleton(AuthService::class, function ($app)
-        {
-            return new AuthService(new PasswordService());
-        });
+        // $this->app->singleton(PasswordService::class, function ($app)
+        // {
+        //     return new PasswordService();
+        // });
+        // $this->app->singleton(AuthService::class, function ($app)
+        // {
+        //     return new AuthService(new PasswordService());
+        // });
     }
 
     /**

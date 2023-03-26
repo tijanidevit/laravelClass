@@ -4,7 +4,7 @@ namespace App\Http\Traits;
 use Illuminate\Http\Response;
 
 trait ResponseTrait{
-    public function successResponse(string $message, array $data, int $status = 200): Response
+    public function successResponse(string $message, mixed $data, int $status = 200): Response
     {
         return response([
             "success" => true,

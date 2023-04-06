@@ -2,6 +2,10 @@
 
 namespace App\Providers;
 
+use App\Events\RegistrationSucessful;
+use App\Events\SendToken;
+use App\Listeners\SendRegistrationConfirmationEmail;
+use App\Listeners\SendResetTokenToEmail;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -17,7 +21,14 @@ class EventServiceProvider extends ServiceProvider
     protected $listen = [
         Registered::class => [
             SendEmailVerificationNotification::class,
+
         ],
+        RegistrationSucessful::class =>[
+            SendRegistrationConfirmationEmail::class,
+        ],
+        SendToken::class =>[
+            SendResetTokenToEmail::class,
+        ]
     ];
 
     /**

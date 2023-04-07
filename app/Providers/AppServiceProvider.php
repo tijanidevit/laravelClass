@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Services\User\AuthService;
 use App\Services\User\PasswordService;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -32,6 +33,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        Relation::enforceMorphMap([
+            'post' => "App\Model\Post",
+            'video' => "App\Model\Video",
+        ]);
     }
 }
